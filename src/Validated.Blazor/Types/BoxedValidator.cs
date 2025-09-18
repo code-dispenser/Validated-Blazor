@@ -1,6 +1,6 @@
 ﻿using Validated.Blazor.Common.Constants;
 
-namespace Validated.Blazor.Common.Types;
+namespace Validated.Blazor.Types;
 
 /// <summary>
 /// Represents a type-erased container for a MemberValidator delegate and its associated metadata.

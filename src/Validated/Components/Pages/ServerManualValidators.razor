@@ -4,7 +4,7 @@
 @using Validated.Blazor
 @using Validated.Blazor.Builders
 @using Validated.Blazor.Common.Constants
-@using Validated.Blazor.Common.Types
+@using Validated.Blazor.Types
 @using Validated.Contracts.Data
 @using Validated.Contracts.Models
 @using Validated.Contracts.Validators
@@ -14,7 +14,7 @@
 @inject IValidatorFactoryProvider _validatorFactoryProvider
 
 <PageTitle>Server Manual Validators</PageTitle>
-
+@* Add the BlazorValidated component and pass it the validators *@
 @rendermode @(new InteractiveServerRenderMode(false))
 
 <h3>Server Manually Created Validators</h3>

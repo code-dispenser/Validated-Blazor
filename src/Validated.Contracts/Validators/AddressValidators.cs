@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Validated.Blazor.Builders;
-using Validated.Blazor.Common.Types;
+using Validated.Blazor.Types;
 using Validated.Contracts.Models;
 using Validated.Core.Common.Constants;
 using Validated.Core.Factories;

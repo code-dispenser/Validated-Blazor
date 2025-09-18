@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Components.Forms;
 using System.Collections.Immutable;
 using Validated.Blazor.Builders;
 using Validated.Blazor.Common.Constants;
-using Validated.Blazor.Common.Types;
 using Validated.Blazor.Tests.SharedDataFixtures.Common.Data;
 using Validated.Blazor.Tests.SharedDataFixtures.Common.Models;
 using Validated.Blazor.Tests.SharedDataFixtures.Common.Validators;
+using Validated.Blazor.Types;
 
 namespace Validated.Blazor.Tests.Integration;
 

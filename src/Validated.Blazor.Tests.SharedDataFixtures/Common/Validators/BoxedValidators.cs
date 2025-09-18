@@ -2,8 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Validated.Blazor.Common.Constants;
-using Validated.Blazor.Common.Types;
 using Validated.Blazor.Tests.SharedDataFixtures.Common.Models;
+using Validated.Blazor.Types;
 using Validated.Core.Validators;
 using Xunit.Sdk;
 

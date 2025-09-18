@@ -2,8 +2,8 @@
 using System.Collections.Immutable;
 using System.Linq.Expressions;
 using Validated.Blazor.Common.Constants;
-using Validated.Blazor.Common.Types;
 using Validated.Blazor.Common.Utilities;
+using Validated.Blazor.Types;
 using Validated.Core.Types;
 
 namespace Validated.Blazor.Builders;

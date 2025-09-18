@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Validated.Blazor.Builders;
-using Validated.Blazor.Common.Types;
+using Validated.Blazor.Types;
 using Validated.Contracts.Models;
 using Validated.Core.Common.Constants;
 using Validated.Core.Factories;

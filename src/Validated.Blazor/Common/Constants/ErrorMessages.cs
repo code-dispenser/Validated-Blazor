@@ -1,4 +1,4 @@
-﻿using Validated.Blazor.Common.Types;
+﻿using Validated.Blazor.Types;
 
 namespace Validated.Blazor.Common.Constants;
 
