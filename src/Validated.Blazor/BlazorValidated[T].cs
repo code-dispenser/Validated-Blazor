@@ -195,7 +195,6 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
             
             context = context.WithValidating(currentModel);
 
-            //var rootTypeName = currentModel.GetType().Name;
             PropertyInfo[] properties = currentModel.GetType().GetProperties();
 
             foreach (PropertyInfo propertyInfo in properties)
@@ -210,7 +209,7 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
 
                     if (true == BoxedValidators.TryGetValue(keyName, out var boxedValidator) && (boxedValidator.ForType == ForType.ForCollection))
                     {
-                        if (items is null && boxedValidator.Optional == true) continue;//not implemented but made test to excercise the continue
+                        if (items is null && boxedValidator.Optional == true) continue;//not implemented but made test to exercise the continue
 
                         var entityFailures = await CallValidateField(boxedValidator, fieldName, items!, (TEntity)CurrentEditContext.Model, cancellationToken);
 
