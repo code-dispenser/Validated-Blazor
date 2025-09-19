@@ -9,7 +9,7 @@
 
 ## Overview
 
-Validated.Blazor is the official UI component library for the [Validated.Core](https://github.com/code-dispenser/Validated) validation framework. It brings the power, flexibility, and composability of functional validation directly into your Blazor applications, providing a seamless and robust alternative to standard DataAnnotations.
+Validated.Blazor is the official UI component library for the [Validated](https://github.com/code-dispenser/Validated) validation framework. It brings the power, flexibility, and composability of functional validation directly into your Blazor applications, providing a seamless and robust alternative to standard DataAnnotations.
 
 At its heart, Validated.Blazor is designed to bridge the declarative, configuration-driven logic of Validated.Core with Blazor's reactive EditContext system. This allows you to build complex, dynamic, and maintainable forms with validation logic that can be shared, versioned, and customized for multi-tenant environments.
 
