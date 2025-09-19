@@ -21,7 +21,7 @@
 	<FileVersion>1.0.0</FileVersion>
 	<InformationalVersion>1.0.0</InformationalVersion>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	<Deterministic>true</Deterministic>
 	<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
