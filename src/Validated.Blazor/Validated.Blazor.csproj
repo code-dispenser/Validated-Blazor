@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -6,7 +6,33 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\assets\ValidatedKey.snk</AssemblyOriginatorKeyFile>
-    <DelaySign>True</DelaySign>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>Validated.Blazor</Title>
+    <Authors>Paul Kent</Authors>
+    <Description>Validated.Blazor is the official UI component library for the Validated validation framework.</Description>
+    <Copyright>Copyright (c) 2025 Paul Kent.</Copyright>
+    <PackageProjectUrl>https://github.com/code-dispenser/Validated-Blazor</PackageProjectUrl>
+    <PackageIcon>logo-64.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/code-dispenser/Validated-Blazor</RepositoryUrl>
+    <PackageTags>blazor;validation;validated;forms;editcontext;fluent;functional;builder;composable;extensible;ui</PackageTags>
+	<Version>1.0.0</Version>
+	<AssemblyVersion>1.0.0</AssemblyVersion>
+	<FileVersion>1.0.0</FileVersion>
+	<InformationalVersion>1.0.0</InformationalVersion>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	<Deterministic>true</Deterministic>
+	<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
 
@@ -25,6 +51,20 @@
 	</ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\assets\logo-64.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

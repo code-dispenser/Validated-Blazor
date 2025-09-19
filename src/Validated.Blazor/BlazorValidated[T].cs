@@ -121,7 +121,7 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
 
     /// <summary>
     /// Handles the validation of a single field when its value changes in the EditContext.
-    /// </summary
+    /// </summary>
     private async void CurrentEditContext_OnFieldChanged(object? sender, FieldChangedEventArgs e)
     {
         var cancellationToken = CancellationToken.None;
@@ -312,7 +312,7 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
         return (await memberValidator((TMemberType)objectValue!, "", default, cancellationToken)).Map(_ => formModel!);
     }
 
-    // <summary>
+    /// <summary>
     /// Formats a collection of failure entries into user-friendly strings.
     /// </summary>
     /// <param name="addDisplayName">Whether to prefix with the display name.</param>

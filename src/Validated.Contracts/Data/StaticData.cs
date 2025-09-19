@@ -15,11 +15,11 @@ public class StaticData
         var nullableAge = DateTime.Now.Year - dob.Year - (DateTime.Now.DayOfYear < dob.DayOfYear ? 1 : 0);
         var age         = DateTime.Now.Year - dob.Year - (DateTime.Now.DayOfYear < dob.DayOfYear ? 1 : 0);
 
-        AddressDto address         = new() { AddressLine = "AddressLine", County = "County", NullablePostcode="PostCode", TownCity="Town" };
-        AddressDto nullableAddress = new() { AddressLine = "AddressLine", County = "County", NullablePostcode="PostCode", TownCity="Town" };
+        AddressDto address         = new() { AddressLine = "Some AddressLine", County = "Some County", NullablePostcode="Some PostCode", TownCity="Some Town" };
+        AddressDto nullableAddress = new() { AddressLine = "Some AddressLine", County = "Some County", NullablePostcode="Some PostCode", TownCity="Some Town" };
 
-        //List<ContactMethodDto> contactMethods = [new() {MethodType = "MethodTypeOne", MethodValue = "MethodValueOne"}, new() { MethodType = "MethodTypeTwo", MethodValue = "MethodValueTwo" }];
-        List<ContactMethodDto> contactMethods = [new() { MethodType = "MethodTypeOne", MethodValue = "MethodValueOne" }];
+        List<ContactMethodDto> contactMethods = [new() {MethodType = "MethodTypeOne", MethodValue = "MethodValueOne"}, new() { MethodType = "MethodTypeTwo", MethodValue = "MethodValueTwo" }];
+
 
         return new() 
         { 

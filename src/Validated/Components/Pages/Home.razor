@@ -2,6 +2,37 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Validated Blazor Demo</h1>
 
-Welcome to your new app.
+<p>Please select the area or interest</p>
+<p>
+    All pages contain the same form layout with either the static/manually created validators or those that are created from configuration data which can be updated during runtime.
+ </p>
+ <p>
+     The menu items starting with Server are run server side using InteractiveServerRenderMode and those starting with Client are run client side using InteractiveWebAssemblyRenderMode.
+ </p>
+ <p>
+     Each page shows its location so you know when things are fully downloaded.
+ </p>
+ <p><b>Nb. </b>Both the server and client project (see the program.cs files) have had the IValidatorFactoryProvider registered for DI which is required for the 
+     configuration/dynamic base approach</p>
+
+<h3>Server Manual Validators</h3>
+<p>
+    Interactive Server with manually created validators.
+</p>
+
+<h3>Server Tenant Validators</h3>
+<p>
+    Interactive Server using validators that are created dynamically based on configuration data.
+</p>
+
+<h3>Client Manual Validators</h3>
+<p>
+    Interactive WebAssembly with manually created validators.
+</p>
+
+<h3>Client Tenant Validators</h3>
+<p>
+    Interactive WebAssembly using validators that are created dynamically based on configuration data.
+</p>
