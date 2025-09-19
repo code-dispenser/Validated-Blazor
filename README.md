@@ -23,7 +23,7 @@ At its heart, Validated.Blazor is designed to bridge the declarative, configurat
 - Complex Model Support: Natively understands and traverses complex object graphs. It effortlessly handles validation for nested objects and collections of objects, ensuring that validation messages are correctly mapped to the right fields, no matter how deep your model is.
 
 ## Getting Started
-Add the Validated.Core nuget package to your project using Nuget Package Manager or the dotnet CLI:
+Add the Validated.Blazor nuget package to your project using Nuget Package Manager or the dotnet CLI:
 ```
 dotnet add package Validated.Blazor
 ```
