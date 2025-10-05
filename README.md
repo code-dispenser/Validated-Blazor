@@ -151,15 +151,15 @@ For more information on the actual validators and/or creating validators please 
         * Just using one builder here so you can see things together. You just compose want you want and share what you want. 
         */
         var builder = BlazorValidationBuilder<ContactDto>.Create()
-                                .ForMember(c => c.Title, ContactValidators.TitleValidator)                      //< using a ready built title member validator
-                                .ForMember(c => c.GivenName, ContactValidators.GivenNameValidator)
-                                .ForMember(c => c.FamilyName, ContactValidators.FamilyNameValidator)            // << This validator (function) combines two functions a regex and a separate length validator
-                                .ForMember(c => c.Age, ContactValidators.AgeValidator)
-                                .ForComparisonWithValue(c => c.DOB, ContactValidators.DOBValidator)
-                                .ForComparisonWithMember(c => c.CompareDOB, ContactValidators.CompareDOBValidator)
-                                .ForNestedMember(c => c.Address, AddressValidators.GetBoxedAddressValidators())// << Getting all the address validators from a pre-created builder.
-                                .ForEachCollectionMember(c => c.ContactMethods, ContactMethodValidators.GetBoxedContactMethodValidators())
-                                .ForCollection(c => c.ContactMethods, MemberValidators.CreateCollectionLengthValidator<List<ContactMethodDto>>(1, 3, "ContactMethods", "Contact methods", "Must have at least 1 contact method but no more than 3"));// << created on the fly
+                        .ForMember(c => c.Title, ContactValidators.TitleValidator)           //< using a ready built title member validator
+                        .ForMember(c => c.GivenName, ContactValidators.GivenNameValidator)
+                        .ForMember(c => c.FamilyName, ContactValidators.FamilyNameValidator) // << This validator (function) combines two functions a regex and a separate length validator
+                        .ForMember(c => c.Age, ContactValidators.AgeValidator)
+                        .ForComparisonWithValue(c => c.DOB, ContactValidators.DOBValidator)
+                        .ForComparisonWithMember(c => c.CompareDOB, ContactValidators.CompareDOBValidator)
+                        .ForNestedMember(c => c.Address, AddressValidators.GetBoxedAddressValidators())// << Getting all the address validators from a pre-created builder.
+                        .ForEachCollectionMember(c => c.ContactMethods, ContactMethodValidators.GetBoxedContactMethodValidators())
+                        .ForCollection(c => c.ContactMethods, MemberValidators.CreateCollectionLengthValidator<List<ContactMethodDto>>(1, 3, "ContactMethods", "Contact methods", "Must have at least 1 contact method but no more than 3"));// << created on the fly
 
 
         _contactBoxedValidators = builder.GetBoxedValidators();
