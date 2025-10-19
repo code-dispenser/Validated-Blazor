@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection;
+using Validated.Blazor.Types;
 
 namespace Validated.Blazor.Common.Utilities;
 
@@ -122,7 +123,19 @@ internal static class GeneralUtils
     /// <returns>True if the property is declared as nullable; otherwise, false.</returns>
     public static bool IsNullable(PropertyInfo property)
     
-        => _context.Create(property).WriteState == NullabilityState.Nullable; 
+        => _context.Create(property).WriteState == NullabilityState.Nullable;
 
-    
+    public static void NormaliseOptionalStringEmptyToNull(BoxedValidator boxedValidator, object fieldModel, string fieldName)
+    {
+        if (boxedValidator.Optional && boxedValidator.MemberType == typeof(string))
+        {
+            PropertyInfo? propertyInfo = fieldModel?.GetType().GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance);
+
+            if (propertyInfo == null) return;
+
+            var currentValue = propertyInfo.GetValue(fieldModel);
+
+            if (currentValue is string stringValue && String.IsNullOrWhiteSpace(stringValue)) propertyInfo.SetValue(fieldModel, null);
+        }
+    }
 }

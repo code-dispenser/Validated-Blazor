@@ -1,186 +1,250 @@
 ﻿using FluentAssertions;
+using Newtonsoft.Json.Bson;
 using System.Linq.Expressions;
 using System.Reflection;
+using Validated.Blazor.Common.Constants;
 using Validated.Blazor.Common.Utilities;
 using Validated.Blazor.Tests.SharedDataFixtures.Common.Data;
 using Validated.Blazor.Tests.SharedDataFixtures.Common.Models;
+using Validated.Blazor.Tests.SharedDataFixtures.Common.Validators;
+using Validated.Blazor.Types;
 using Xunit.Sdk;
 
 namespace Validated.Blazor.Tests.Unit.Common.Utilities;
 
 public class GeneralUtils_Tests
 {
-    [Fact]
-    public void The_get_member_name_should_return_the_member_name_for_a_valid_expression()
-
-        => GeneralUtils.GetMemberName<ContactDto, string>(c => c.FamilyName).Should().Be("FamilyName");
-
-    [Fact]
-    public void The_get_member_name_should_return_a_fallback_value_for_an_invalid_expression()
-    
-        => GeneralUtils.GetMemberName<ContactDto, string>(c => c.FamilyName.ToString()).Should().StartWith("Contact");
-
-
-    [Fact]
-    public void Extract_member_name_should_return_member_name_for_unary_expression_with_member_operand()
+    public class GetMemberName
     {
-        Expression expr = ((Expression<Func<ContactDto, object>>)(c => (object)c.GivenName)).Body;
-        GeneralUtils.ExtractMemberName(expr).Should().Be("GivenName");
+        [Fact]
+        public void Should_return_the_member_name_for_a_valid_expression()
+
+            => GeneralUtils.GetMemberName<ContactDto, string>(c => c.FamilyName).Should().Be("FamilyName");
+
+        [Fact]
+        public void Should_return_a_fallback_value_for_an_invalid_expression()
+
+            => GeneralUtils.GetMemberName<ContactDto, string>(c => c.FamilyName.ToString()).Should().StartWith("Contact");
+
     }
-    [Fact]
-    public void Extract_member_name_should_return_Item_for_method_call_expression_get_Item()
-    {
-        Expression expression = ((Expression<Func<ContactDto, string>>)(c => c.ContactMethods[0].MethodType)).Body;
 
-        if (expression is MemberExpression memberExpression && memberExpression.Expression is MethodCallExpression methodExpression)
+    public class ExtractMemberName
+    {
+        [Fact]
+        public void Should_return_member_name_for_unary_expression_with_member_operand()
         {
-            GeneralUtils.ExtractMemberName(methodExpression).Should().Be("Item");
+            Expression expr = ((Expression<Func<ContactDto, object>>)(c => (object)c.GivenName)).Body;
+            GeneralUtils.ExtractMemberName(expr).Should().Be("GivenName");
         }
-        else
+        [Fact]
+        public void Should_return_Item_for_method_call_expression_get_Item()
         {
-            throw new XunitException("Should not be here");
+            Expression expression = ((Expression<Func<ContactDto, string>>)(c => c.ContactMethods[0].MethodType)).Body;
+
+            if (expression is MemberExpression memberExpression && memberExpression.Expression is MethodCallExpression methodExpression)
+            {
+                GeneralUtils.ExtractMemberName(methodExpression).Should().Be("Item");
+            }
+            else
+            {
+                throw new XunitException("Should not be here");
+            }
+        }
+        [Fact]
+        public void Should_return_parameter_name_for_parameter_expression()
+        {
+
+            ParameterExpression expression = Expression.Parameter(typeof(ContactDto), nameof(ContactDto));
+            GeneralUtils.ExtractMemberName(expression).Should().Be(nameof(ContactDto));
         }
     }
-    [Fact]
-    public void Extract_member_name_should_return_parameter_name_for_parameter_expression()
+
+    public class BuildMemberValidatorKey
     {
 
-        ParameterExpression expression = Expression.Parameter(typeof(ContactDto), nameof(ContactDto));
-        GeneralUtils.ExtractMemberName(expression).Should().Be(nameof(ContactDto));
+        [Fact]
+        public void Should_concatenate_the_entity_or_parent_property_name_with_the_member_name()
+
+            => GeneralUtils.BuildMemberValidatorKey(nameof(ContactDto), nameof(ContactDto.Title)).Should().Be(nameof(ContactDto) + "." + nameof(ContactDto.Title));
+
+        [Fact]
+        public void Should_return_the_member_name_if_the_parent_is_null_or_empty()
+
+             => GeneralUtils.BuildMemberValidatorKey(null!, nameof(ContactDto.Title)).Should().Be(nameof(ContactDto.Title));
     }
 
-    [Fact]
-    public void Build_member_validator_key_should_concatenate_the_entity_or_parent_property_name_with_the_member_name()
-
-        => GeneralUtils.BuildMemberValidatorKey(nameof(ContactDto), nameof(ContactDto.Title)).Should().Be(nameof(ContactDto) + "." + nameof(ContactDto.Title));
-
-    [Fact]
-    public void Build_member_validator_key_should_return_the_member_name_if_the_parent_is_null_or_empty()
-
-         => GeneralUtils.BuildMemberValidatorKey(null!, nameof(ContactDto.Title)).Should().Be(nameof(ContactDto.Title));
-
-
-    [Fact]
-    public void Is_nullable_should_return_true_for_nullable_valueTypes()
+    public class IsNullable
     {
-        var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.NullableAge))!;
-       
-        GeneralUtils.IsNullable(propertyInfo).Should().BeTrue();
+        [Fact]
+        public void Should_return_true_for_nullable_valueTypes()
+        {
+            var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.NullableAge))!;
+
+            GeneralUtils.IsNullable(propertyInfo).Should().BeTrue();
+        }
+
+        [Fact]
+        public void Should_return_false_for_non_nullable_valueTypes()
+        {
+            var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.Age))!;
+
+            GeneralUtils.IsNullable(propertyInfo).Should().BeFalse();
+        }
+
+        [Fact]
+        public void Should_return_true_for_nullable_reference_types()
+        {
+            var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.Mobile))!;
+
+            GeneralUtils.IsNullable(propertyInfo).Should().BeTrue();
+        }
+
+        [Fact]
+        public void Is_nullable_should_return_false_for_non_nullable_reference_type()
+        {
+            var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.GivenName))!;
+
+            GeneralUtils.IsNullable(propertyInfo).Should().BeFalse();
+        }
+
+        [Fact]
+        public void Is_nullable_should_return_true_for_nullable_complex_types()
+        {
+            var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.NullableAddress))!;
+
+            GeneralUtils.IsNullable(propertyInfo).Should().BeTrue();
+        }
+
+        [Fact]
+        public void Is_nullable_should_return_false_for_non_nullable_complex_types()
+        {
+            var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.Address))!;
+
+            GeneralUtils.IsNullable(propertyInfo).Should().BeFalse();
+        }
     }
 
-    [Fact]
-    public void Is_nullable_should_return_false_for_non_nullable_valueTypes()
+    public class FindModelPropertyName
     {
-        var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.Age))!;
+        [Fact]
+        public void Should_return_the_parent_property_name_for_the_child_object()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var addressDto = contactData.Address;
 
-        GeneralUtils.IsNullable(propertyInfo).Should().BeFalse();
+            GeneralUtils.FindModelPropertyName(contactData, addressDto, new HashSet<object>(ReferenceEqualityComparer.Instance))
+                            .Should().Be("Address");
+        }
+        [Fact]
+        public void Should_return_an_empty_string_if_the_current_is_null()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var addressDto  = contactData.Address;
+
+            GeneralUtils.FindModelPropertyName(null!, addressDto, new HashSet<object>(ReferenceEqualityComparer.Instance))
+                            .Should().Be("");
+        }
+
+        [Fact]
+        public void Should_continue_searching_if_property_values_are_null()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+
+            GeneralUtils.FindModelPropertyName(contactData, null!, new HashSet<object>(ReferenceEqualityComparer.Instance))
+                            .Should().Be("");
+        }
+
+        [Fact]
+        public void Should_skip_indexer_properties_when_searching()
+        {
+
+            var objectWithIndexer = new ObjectWithIndexer();
+            var targetChild       = new SimpleChild { Name = "Target" };
+
+            objectWithIndexer.RegularProperty = targetChild;
+
+            var result = GeneralUtils.FindModelPropertyName(objectWithIndexer, targetChild, new HashSet<object>(ReferenceEqualityComparer.Instance));
+
+            result.Should().Be("RegularProperty");
+        }
+
+        [Fact]
+        public void Should_find_property_names_from_nested_objects()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var result      = GeneralUtils.FindModelPropertyName(contactData, contactData.Address.TownCity, new HashSet<object>(ReferenceEqualityComparer.Instance));
+            result.Should().Be(nameof(ContactDto.Address));
+        }
+
+        [Fact]
+        public void Should_find_names_from_collections()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var result      = GeneralUtils.FindModelPropertyName(contactData, contactData.ContactMethods[0], new HashSet<object>(ReferenceEqualityComparer.Instance));
+            result.Should().Be(nameof(ContactDto.ContactMethods));
+        }
+
+        [Fact]
+        public void Should_find_names_from_nested_collection_items()
+        {
+            var targetManager = new { Name = "John Smith", EmployeeId = 123 };
+            var department    = new { Name = "IT", Managers = new[] { targetManager } };
+            var organisation  = new { Name = "ACME Corp", Departments = new[] { department } };
+            var visited       = new HashSet<object>(ReferenceEqualityComparer.Instance);
+
+            var result = GeneralUtils.FindModelPropertyName(organisation, targetManager, visited);
+
+            result.Should().Be("Departments");
+        }
+
     }
 
-    [Fact]
-    public void Is_nullable_should_return_true_for_nullable_reference_types()
+    public class NormaliseOptionalStringEmptyToNull
     {
-        var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.Mobile))!;
+        [Fact]
+        public void Should_set_an_empty_string_to_null()
+        {
+            var contactData    = StaticData.CreateContactObjectGraph();
+            var boxedValidator = new BoxedValidator(nameof(ContactDto.Mobile), ForType.ForMember, true, (object)StubbedValidators.CreatePassingMemberValidator<string>, typeof(string));
 
-        GeneralUtils.IsNullable(propertyInfo).Should().BeTrue();
+            contactData.Mobile = String.Empty;
+            GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator,contactData, nameof(ContactDto.Mobile));
+
+            contactData.Mobile.Should().BeNull();
+        }
+
+        [Fact]
+        public void Should_return_if_property_is_not_correct_without_changing_the_object_value()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var boxedValidator = new BoxedValidator(nameof(ContactDto.Mobile), ForType.ForMember, true, (object)StubbedValidators.CreatePassingMemberValidator<string>, typeof(string));
+
+            contactData.Mobile = String.Empty;
+            GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator, contactData,"BadPropertyName");
+
+            contactData.Mobile.Should().BeEmpty();
+        }
+        [Fact]
+        public void Should_keep_null_value_if_already_null()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var boxedValidator = new BoxedValidator(nameof(ContactDto.Mobile), ForType.ForMember, true, (object)StubbedValidators.CreatePassingMemberValidator<string>, typeof(string));
+
+            contactData.Mobile = null;
+            GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator, contactData, nameof(ContactDto.Mobile));
+
+            contactData.Mobile.Should().BeNull();
+        }
+
+        [Fact]
+        public void Should_not_throw_an_exception_if_the_field_model_is_null()
+        {
+            var contactData    = StaticData.CreateContactObjectGraph();
+            var boxedValidator = new BoxedValidator(nameof(ContactDto.Mobile), ForType.ForMember, true, (object)StubbedValidators.CreatePassingMemberValidator<string>, typeof(string));
+
+            FluentActions.Invoking(() => GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator, null!, nameof(ContactDto.Mobile))).Should().NotThrow();
+        }
     }
-
-    [Fact]
-    public void Is_nullable_should_return_false_for_non_nullable_reference_type()
-    {
-        var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.GivenName))!;
-
-        GeneralUtils.IsNullable(propertyInfo).Should().BeFalse();
-    }
-
-    [Fact]
-    public void Is_nullable_should_return_true_for_nullable_complex_types()
-    {
-        var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.NullableAddress))!;
-
-        GeneralUtils.IsNullable(propertyInfo).Should().BeTrue();
-    }
-
-    [Fact]
-    public void Is_nullable_should_return_false_for_non_nullable_complex_types()
-    {
-        var propertyInfo = typeof(ContactDto).GetProperty(nameof(ContactDto.Address))!;
-
-        GeneralUtils.IsNullable(propertyInfo).Should().BeFalse();
-    }
-
-
-    [Fact]
-    public void Find_model_property_name_should_return_the_parent_property_name_for_the_child_object()
-    {
-        var contactData = StaticData.CreateContactObjectGraph();
-        var addressDto  = contactData.Address;
-
-        GeneralUtils.FindModelPropertyName(contactData, addressDto, new HashSet<object>(ReferenceEqualityComparer.Instance))
-                        .Should().Be("Address");
-    }
-    [Fact]
-    public void Find_model_property_name_should_return_an_empty_string_if_the_current_is_null()
-    {
-        var contactData = StaticData.CreateContactObjectGraph();
-        var addressDto = contactData.Address;
-
-        GeneralUtils.FindModelPropertyName(null!, addressDto, new HashSet<object>(ReferenceEqualityComparer.Instance))
-                        .Should().Be("");
-    }
-
-    [Fact]
-    public void Find_model_property_name_should_continue_searching_if_property_values_are_null()
-    {
-        var contactData = StaticData.CreateContactObjectGraph();
-
-        GeneralUtils.FindModelPropertyName(contactData, null!, new HashSet<object>(ReferenceEqualityComparer.Instance))
-                        .Should().Be("");
-    }
-
-    [Fact]
-    public void Find_model_property_name_should_skip_indexer_properties_when_searching()
-    {
-
-        var objectWithIndexer = new ObjectWithIndexer();
-        var targetChild       = new SimpleChild { Name = "Target" };
-        
-        objectWithIndexer.RegularProperty = targetChild;
-
-        var result = GeneralUtils.FindModelPropertyName(objectWithIndexer, targetChild, new HashSet<object>(ReferenceEqualityComparer.Instance));
-
-        result.Should().Be("RegularProperty");
-    }
-
-    [Fact]
-    public void Find_model_property_name_should_find_property_names_from_nested_objects()
-    {
-        var contactData = StaticData.CreateContactObjectGraph();
-        var result      = GeneralUtils.FindModelPropertyName(contactData,contactData.Address.TownCity, new HashSet<object>(ReferenceEqualityComparer.Instance));
-        result.Should().Be(nameof(ContactDto.Address));
-    }
-
-    [Fact]
-    public void Find_model_property_name_should_find_names_from_collections()
-    {
-        var contactData = StaticData.CreateContactObjectGraph();
-        var result      = GeneralUtils.FindModelPropertyName(contactData, contactData.ContactMethods[0], new HashSet<object>(ReferenceEqualityComparer.Instance));
-        result.Should().Be(nameof(ContactDto.ContactMethods));
-    }
-
-    [Fact]
-
-    public void Find_model_property_name_should_find_names_from_nested_collection_items()
-    {
-        var targetManager = new { Name = "John Smith", EmployeeId = 123 };
-        var department    = new { Name = "IT", Managers = new[] { targetManager } };
-        var organisation  = new { Name = "ACME Corp", Departments = new[] { department } };
-        var visited       = new HashSet<object>(ReferenceEqualityComparer.Instance);
-
-        var result = GeneralUtils.FindModelPropertyName(organisation, targetManager, visited);
-
-        result.Should().Be("Departments");
-    }
-
 }
 
 

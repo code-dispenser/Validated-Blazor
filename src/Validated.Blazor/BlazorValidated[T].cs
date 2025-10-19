@@ -143,6 +143,8 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
 
         if (false == BoxedValidators.TryGetValue(memberKey, out var boxedValidator)) return;
 
+        GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator, e.FieldIdentifier.Model, e.FieldIdentifier.FieldName);
+
         PropertyInfo propertyInfo  = e.FieldIdentifier.Model.GetType().GetProperty(e.FieldIdentifier.FieldName)!;
         MethodInfo   methodInfo    = typeof(BlazorValidated<TEntity>).GetMethod("ValidateField", BindingFlags.NonPublic | BindingFlags.Static, [typeof(BoxedValidator),typeof(string), typeof(object), typeof(TEntity), typeof(CancellationToken)])!;
         MethodInfo   genericMethod = methodInfo.MakeGenericMethod(boxedValidator.MemberType);
@@ -278,6 +280,8 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
     /// <returns>A list of validation failures; empty if validation succeeds.</returns>
     private async Task<List<InvalidEntry>> CallValidateField(BoxedValidator boxedValidator, string fieldName, object fieldModel, TEntity formModel, CancellationToken cancellationToken = default)
     {
+        GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator, fieldModel, fieldName);
+
         MethodInfo methodInfo    = typeof(BlazorValidated<TEntity>).GetMethod("ValidateField", BindingFlags.NonPublic | BindingFlags.Static, [typeof(BoxedValidator), typeof(string), typeof(object), typeof(TEntity), typeof(CancellationToken)])!;
         MethodInfo genericMethod = methodInfo.MakeGenericMethod(boxedValidator.MemberType);
 
@@ -298,7 +302,7 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
     /// <returns>A <see cref="Validated{TEntity}"/> result for the operation.</returns>
     private static async Task<Validated<TEntity>> ValidateField<TMemberType>(BoxedValidator boxedValidator, string fieldName, object fieldModel, TEntity formModel, CancellationToken cancellationToken = default) where TMemberType : notnull
     {
-        //object? memberValue = formModel is null ? null : fieldModel.GetType().GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance)?.GetValue(fieldModel) ?? null;
+        GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator, fieldModel, fieldName);
 
         object? memberValue = fieldModel?.GetType().GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance)?.GetValue(fieldModel);
 

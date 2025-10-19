@@ -11,8 +11,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Validated.Client\Validated.Client.csproj" />
     <ProjectReference Include="..\Validated.Contracts\Validated.Contracts.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.9" />
-    <PackageReference Include="Validated.Core" Version="1.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.10" />
+    <PackageReference Include="Validated.Core" Version="1.1.0" />
   </ItemGroup>
 	<ItemGroup>
 		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
