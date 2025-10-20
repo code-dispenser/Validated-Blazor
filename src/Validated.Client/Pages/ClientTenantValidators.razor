@@ -29,38 +29,38 @@
     <div class="row mb-2">
         <div class="col-sm-6">
             <label class="form-label" for="textBoxTitle">Title:</label>
-            <InputText id="textBoxTitle" Class="form-control" @bind-Value="_contactData.Title" />
+            <InputText id="textBoxTitle" class="form-control" @bind-Value="_contactData.Title" />
             <ValidationMessage For="() => _contactData.Title" />
         </div>
     </div>
     <div class="row mb-2">
         <div class="col-sm-6">
             <label class="form-label" for="textBoxFirstName">First name:</label>
-            <InputText id="textBoxFirstName" Class="form-control" @bind-value="_contactData.GivenName" />
+            <InputText id="textBoxFirstName" class="form-control" @bind-value="_contactData.GivenName" />
             <ValidationMessage For="() => _contactData.GivenName" />
         </div>
         <div class="col-sm-6">
             <label class="form-label" for="textBoxSurname">Surname:</label>
-            <InputText id="textBoxSurname" Class="form-control" @bind-Value="_contactData.FamilyName" />
+            <InputText id="textBoxSurname" class="form-control" @bind-Value="_contactData.FamilyName" />
             <ValidationMessage For="() => _contactData.FamilyName" />
         </div>
     </div>
     <div class="row mb-2">
         <div class="col-sm-6">
             <label class="form-label" for="textBoxAge">Age:</label>
-            <InputNumber id="textBoxAge" Class="form-control" @bind-value="_contactData.Age" />
+            <InputNumber id="textBoxAge" class="form-control" @bind-value="_contactData.Age" />
             <ValidationMessage For="() => _contactData.Age" />
         </div>
     </div>
     <div class="row mb-2">
         <div class="col-sm-6">
             <label class="form-label" for="textBoxDOB">Date of birth:</label>
-            <InputDate id="textBoxDOB" Class="form-control" @bind-value="_contactData.DOB" />
+            <InputDate id="textBoxDOB" class="form-control" @bind-value="_contactData.DOB" />
             <ValidationMessage For="() => _contactData.DOB" />
         </div>
         <div class="col-sm-6">
             <label class="form-label" for="textBoxCompareDOB">Compare DOB:</label>
-            <InputDate id="textBoxCompareDOB" Class="form-control" @bind-Value="_contactData.CompareDOB" />
+            <InputDate id="textBoxCompareDOB" class="form-control" @bind-Value="_contactData.CompareDOB" />
             <ValidationMessage For="() => _contactData.CompareDOB" />
         </div>
     </div>
@@ -69,24 +69,24 @@
         <h5 class="col-sm-12 mb-2 mt-2">Address (nested complex type):</h5>
         <div class="col-sm-12">
             <label class="form-label" for="textBoxAddressLine">Address line:</label>
-            <InputText id="textBoxAddressLine" Class="form-control" @bind-value="_contactData.Address.AddressLine" />
+            <InputText id="textBoxAddressLine" class="form-control" @bind-value="_contactData.Address.AddressLine" />
             <ValidationMessage For="() => _contactData.Address.AddressLine" />
         </div>
     </div>
     <div class="row mb-2">
         <div class="col-sm-4">
             <label class="form-label" for="textBoxTownCity">Town / city:</label>
-            <InputText id="textBoxTownCity" Class="form-control" @bind-value="_contactData.Address.TownCity" />
+            <InputText id="textBoxTownCity" class="form-control" @bind-value="_contactData.Address.TownCity" />
             <ValidationMessage For="() => _contactData.Address.TownCity" />
         </div>
         <div class="col-sm-4">
             <label class="form-label" for="textBoxCounty">County:</label>
-            <InputText id="textBoxCounty" Class="form-control" @bind-Value="_contactData.Address.County" />
+            <InputText id="textBoxCounty" class="form-control" @bind-Value="_contactData.Address.County" />
             <ValidationMessage For="() => _contactData.Address.County" />
         </div>
         <div class="col-sm-4">
             <label class="form-label" for="textBoxPostCode">Postcode:</label>
-            <InputText id="textBoxPostCode" Class="form-control" @bind-Value="_contactData.Address.NullablePostcode" />
+            <InputText id="textBoxPostCode" class="form-control" @bind-Value="_contactData.Address.NullablePostcode" />
             <ValidationMessage For="() => _contactData.Address.NullablePostcode" />
         </div>
     </div>
@@ -99,12 +99,12 @@
         {
             <div class="col-sm-6">
                 <label class="form-label" for=@("texBoxMethodType-" + index)>Method type:</label>
-                <InputText id=@("texBoxMethodType-" + index) Class="form-control" @bind-Value="@contactMethod.MethodType" />
+                <InputText id=@("texBoxMethodType-" + index) class="form-control" @bind-Value="@contactMethod.MethodType" />
                 <ValidationMessage For="() => contactMethod.MethodType" />
             </div>
             <div class="col-sm-6">
                 <label class="form-label" for=@("texBoxMethodValue-" + index)>Method value:</label>
-                <InputText id="@("texBoxMethodValue=" + index)" Class="form-control" @bind-Value="@contactMethod.MethodValue" />
+                <InputText id="@("texBoxMethodValue=" + index)" class="form-control" @bind-Value="@contactMethod.MethodValue" />
                 <ValidationMessage For="() => contactMethod.MethodValue" />
             </div>
             <div class="col-sm-12">
