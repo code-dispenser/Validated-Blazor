@@ -39,7 +39,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.Title);
+        var validated = await validator(contactData.Title, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -59,7 +59,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<int>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator((int)contactData.NullableAge!);//cant use <int?> validators do not allow it
+        var validated = await validator((int)contactData.NullableAge!, cancellationToken: TestContext.Current.CancellationToken);//cant use <int?> validators do not allow it
 
         using (new AssertionScope())
         {
@@ -78,7 +78,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.Mobile!);//data fails validation as its not a uk number
+        var validated = await validator(contactData.Mobile!, cancellationToken: TestContext.Current.CancellationToken);//data fails validation as its not a uk number
 
         using (new AssertionScope())
         {
@@ -98,7 +98,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.Address.AddressLine);
+        var validated = await validator(contactData.Address.AddressLine, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -120,7 +120,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.NullableAddress.AddressLine);
+        var validated = await validator(contactData.NullableAddress.AddressLine, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -140,7 +140,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.ContactMethods[0].MethodValue);
+        var validated = await validator(contactData.ContactMethods[0].MethodValue, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -158,7 +158,7 @@ public class BlazorTenantValidationBuilder_Tests
         var boxedValidators = tenantBuilder.GetBoxedValidators();
 
         var validator = (MemberValidator<ContactDto>)boxedValidators.ElementAt(0).Value.MemberValidator;
-        var validated = await validator(contactData);
+        var validated = await validator(contactData, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -176,7 +176,7 @@ public class BlazorTenantValidationBuilder_Tests
         var boxedValidators = tenantBuilder.GetBoxedValidators();
 
         var validator = (MemberValidator<int>)boxedValidators.ElementAt(0).Value.MemberValidator;
-        var validated = await validator(contactData.Age);
+        var validated = await validator(contactData.Age, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -196,7 +196,7 @@ public class BlazorTenantValidationBuilder_Tests
         contactData.Entries = ["EntryOne", "EntryTwo"];
 
         var validator = (MemberValidator<List<string>>)boxedValidators.ElementAt(0).Value.MemberValidator;
-        var validated = await validator(contactData.Entries);
+        var validated = await validator(contactData.Entries, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {

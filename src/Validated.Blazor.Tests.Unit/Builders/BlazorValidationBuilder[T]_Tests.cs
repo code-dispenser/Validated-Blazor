@@ -30,7 +30,7 @@ public class BlazorValidationBuilder_Tests
         var boxedValidators = builder.GetBoxedValidators();
         var validator       = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
         
-        var validated       = await validator(contactData.Title);
+        var validated       = await validator(contactData.Title, cancellationToken: TestContext.Current.CancellationToken);
 
         using(new AssertionScope())
         {
@@ -51,7 +51,7 @@ public class BlazorValidationBuilder_Tests
         var boxedValidators = builder.GetBoxedValidators();
         var validator       = (MemberValidator<int>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator((int)contactData.NullableAge!);//cant use <int?> validators do not allow it
+        var validated = await validator((int)contactData.NullableAge!, cancellationToken: TestContext.Current.CancellationToken);//cant use <int?> validators do not allow it
 
         using (new AssertionScope())
         {
@@ -71,7 +71,7 @@ public class BlazorValidationBuilder_Tests
         var boxedValidators = builder.GetBoxedValidators();
         var validator       = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated       = await validator(contactData.Mobile!);
+        var validated       = await validator(contactData.Mobile!, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -93,7 +93,7 @@ public class BlazorValidationBuilder_Tests
         var boxedValidators = builder.GetBoxedValidators();
         var validator       = (MemberValidator<AddressDto>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.Address!);
+        var validated = await validator(contactData.Address!, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -116,7 +116,7 @@ public class BlazorValidationBuilder_Tests
         var boxedValidators = builder.GetBoxedValidators();
         var validator       = (MemberValidator<AddressDto>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.NullableAddress!);
+        var validated = await validator(contactData.NullableAddress!, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -137,7 +137,7 @@ public class BlazorValidationBuilder_Tests
         var boxedValidators = builder.GetBoxedValidators();
         var validator       = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.ContactMethods[0].MethodValue);
+        var validated = await validator(contactData.ContactMethods[0].MethodValue, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -156,7 +156,7 @@ public class BlazorValidationBuilder_Tests
 
         var boxedValidators = builder.GetBoxedValidators();
         var validator       = (MemberValidator<ContactDto>)boxedValidators.ElementAt(0).Value.MemberValidator;
-        var validated       = await validator(contactData);
+        var validated       = await validator(contactData, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -175,7 +175,7 @@ public class BlazorValidationBuilder_Tests
 
         var boxedValidators = builder.GetBoxedValidators();
         var validator       = (MemberValidator<DateOnly>)boxedValidators.ElementAt(0).Value.MemberValidator;
-        var validated       = await validator(contactData.DOB);
+        var validated       = await validator(contactData.DOB, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -194,7 +194,7 @@ public class BlazorValidationBuilder_Tests
 
         var boxedValidators = builder.GetBoxedValidators();
         var validator       = (MemberValidator<List<string>>)boxedValidators.ElementAt(0).Value.MemberValidator;
-        var validated       = await validator(contactData.Entries);
+        var validated       = await validator(contactData.Entries, cancellationToken: TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
