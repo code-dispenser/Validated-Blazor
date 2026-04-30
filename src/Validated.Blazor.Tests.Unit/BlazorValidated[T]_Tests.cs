@@ -15,11 +15,11 @@ namespace Validated.Blazor.Tests.Unit;
 
 public class BlazorValidated_Tests
 {
-    private static IRenderedComponent<BlazorValidated<ContactDto>> CreateValidatorComponent(TestContext context, EditContext editContext, ImmutableDictionary<string, BoxedValidator> boxedValidators,
+    private static IRenderedComponent<BlazorValidated<ContactDto>> CreateValidatorComponent(BunitContext context, EditContext editContext, ImmutableDictionary<string, BoxedValidator> boxedValidators,
                                                                                             bool addDisplayName = true, Func<ValidationLevel, FieldIdentifier?, Task<CancellationToken>>? onValidationStarted = null,
                                                                                             Func<ValidationLevel, FieldIdentifier?, CancellationToken, Task>? onValidationCompleted = null)
 
-        => context.RenderComponent<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
+        => context.Render<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
                                                             .Add(paramBuilder => paramBuilder.BoxedValidators, boxedValidators)
                                                             .Add(paramBuilder => paramBuilder.AddDisplayName, addDisplayName)
                                                             .Add(paramBuilder => paramBuilder.OnValidationStarted, onValidationStarted)
@@ -29,32 +29,32 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_thrown_an_invalid_operation_exception_if_the_edit_context_is_null()
         {
-            using var context = new TestContext();
+            using var context = new BunitContext();
 
-            FluentActions.Invoking(() => context.RenderComponent<BlazorValidated<ContactDto>>())
+            FluentActions.Invoking(() => context.Render<BlazorValidated<ContactDto>>())
                                 .Should().ThrowExactly<InvalidOperationException>().WithMessage(ErrorMessages.Validator_Missing_Context_Message);
         }
         [Fact]
         public void Should_thrown_an_invalid_operation_exception_if_the_boxed_validators_param_is_null()
         {
-            using var context = new TestContext();
+            using var context = new BunitContext();
 
             var editContext = new EditContext(StaticData.CreateContactObjectGraph());
 
-            FluentActions.Invoking(() => context.RenderComponent<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)))
+            FluentActions.Invoking(() => context.Render<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)))
                              .Should().ThrowExactly<InvalidOperationException>().WithMessage(ErrorMessages.Validator_Missing_Boxed_Validators_Message);
         }
 
         [Fact]
         public void Should_thrown_an_invalid_operation_exception_if_the_boxed_validators_param_is_empty()
         {
-            using var context = new TestContext();
+            using var context = new BunitContext();
 
             var editContext = new EditContext(StaticData.CreateContactObjectGraph());
 
             ImmutableDictionary<string,BoxedValidator> boxedValidators = ImmutableDictionary<string ,BoxedValidator>.Empty;
 
-            FluentActions.Invoking(() => context.RenderComponent<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
+            FluentActions.Invoking(() => context.Render<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
                                                                                                                           .Add(paramBuilder => paramBuilder.BoxedValidators, boxedValidators)))
                              .Should().ThrowExactly<InvalidOperationException>().WithMessage(ErrorMessages.Validator_Missing_Boxed_Validators_Message);
         }
@@ -62,13 +62,13 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_initialise_correctly_with_valid_parameters()
         {
-            using var context = new TestContext();
+            using var context = new BunitContext();
 
             var editContext = new EditContext(StaticData.CreateContactObjectGraph());
 
             ImmutableDictionary<string, BoxedValidator> boxedValidators = BoxedValidators.OnlyTheContactTitleValidator();
 
-            var validatorComponent = context.RenderComponent<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
+            var validatorComponent = context.Render<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
                                                                                                                             .Add(paramBuilder => paramBuilder.BoxedValidators, boxedValidators));
 
             validatorComponent.Should().NotBeNull();
@@ -81,7 +81,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_validate_field_when_the_field_changes()
         {
-            var context            = new TestContext();    
+            using var context = new BunitContext();
             var contactData        = StaticData.CreateContactObjectGraph();
             var editContext        = new EditContext(contactData);
             
@@ -97,7 +97,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_clear_validation_messages_for_a_valid_field()
         {
-            var context           = new TestContext();
+            using var context = new BunitContext();
             var contactData       = StaticData.CreateContactObjectGraph();
             var editContext       = new EditContext(contactData);
             
@@ -125,7 +125,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void No_validation_Should_occur_or_errors_raised_if_there_is_no_validator()
         {
-            var context           = new TestContext();
+            using var context     = new BunitContext();
             var contactData       = StaticData.CreateContactObjectGraph();
             var editContext       = new EditContext(contactData);
             
@@ -141,7 +141,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_be_able_to_receive_the_validation_start_call_back_if_a_call_back_func_was_provided()
         {
-            var context     = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
 
@@ -168,7 +168,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_not_propagate_exceptions_occurring_in_the_users_on_validation_started_call_back()
         {
-            var context     = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
 
@@ -186,7 +186,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_be_able_to_receive_the_validation_completed_call_back_if_a_call_back_func_was_provided()
         {
-            var context     = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
             
@@ -216,7 +216,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_validate_the_entire_form_model_on_validation_requested_returning_false_if_there_is_an_invalid_entry()
         {
-            var context           = new TestContext();
+            using var context = new BunitContext();
             var contactData       = StaticData.CreateContactObjectGraph();
             var editContext       = new EditContext(contactData);
             
@@ -237,7 +237,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_validate_the_entire_form_model_on_validation_requested_returning_true_if_there_are_no_failures()
         {
-            var context           = new TestContext();
+            using var context = new BunitContext();
             var contactData       = StaticData.CreateContactObjectGraph();
             var editContext       = new EditContext(contactData);
             
@@ -254,7 +254,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_be_able_to_receive_the_validation_start_call_back_if_a_call_back_func_was_provided()
         {
-            var context = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
 
@@ -281,7 +281,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_not_propagate_exceptions_occurring_in_the_users_on_validation_started_call_back()
         {
-            var context     = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
 
@@ -300,7 +300,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_be_able_to_receive_the_validation_completed_call_back_if_a_call_back_func_was_provided()
         {
-            var context = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
 
@@ -330,7 +330,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_pass_validation_for_null_values_when_the_member_is_optional_nullable()
         {
-            var context           = new TestContext();
+            using var context = new BunitContext();
             var contactData       = StaticData.CreateContactObjectGraph();
             var editContext       = new EditContext(contactData);
             
@@ -355,7 +355,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_fail_validation_for_null_values_when_the_member_is_not_optional_nullable()
         {
-            var context           = new TestContext();
+            using var context = new BunitContext();
             var contactData       = StaticData.CreateContactObjectGraph();
             var editContext       = new EditContext(contactData);
             
@@ -376,7 +376,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_be_able_to_validate_at_the_collection_level_such_as_using_count()
         {
-            var context           = new TestContext();
+            using var context = new BunitContext();
             var contactData       = StaticData.CreateContactObjectGraph();
             var editContext       = new EditContext(contactData);
             
@@ -396,11 +396,11 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_not_allow_parent_child_parent_infinite_loops()
         {
-            var context     = new TestContext();
+            using var context = new BunitContext();
             var parentChild = new Parent("Parent", "Child");//has cyclic reference
             var editContext = new EditContext(parentChild);
 
-            context.RenderComponent<BlazorValidated<Parent>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
+            context.Render<BlazorValidated<Parent>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
                                                             .Add(paramBuilder => paramBuilder.BoxedValidators, BoxedValidators.OnlyTheContactTitleValidator()));//validator not important
 
             editContext.Validate().Should().BeTrue();
@@ -409,7 +409,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Collection_level_validations_with_null_collections_should_fail_validation()
         {
-            var context     = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
 
@@ -430,7 +430,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Collection_level_validations_that_are_nullable_should_pass_validation()//only added for potential future change
         {
-            var context     = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
 
@@ -450,7 +450,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Nested_non_nullable_members_should_fail_validation_if_null()
         {
-            var context     = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
 
@@ -469,11 +469,11 @@ public class BlazorValidated_Tests
         [Fact]
         public void Unsupported_for_each_primitive_item_validators_should_be_skipped_and_pass()
         {
-            var context       = new TestContext();
+            using var context = new BunitContext();
             var primitiveData = new PrimitiveCollectionHolder("PrimitiveHolder", [5,6]);
             var editContext   = new EditContext(primitiveData);
 
-            context.RenderComponent<BlazorValidated<PrimitiveCollectionHolder>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
+            context.Render<BlazorValidated<PrimitiveCollectionHolder>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
                                                             .Add(paramBuilder => paramBuilder.BoxedValidators, BoxedValidators.OnlyTheContactPrimitiveValidator()));//validator not important
 
 

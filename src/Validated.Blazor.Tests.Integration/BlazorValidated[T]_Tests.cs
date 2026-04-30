@@ -13,11 +13,11 @@ namespace Validated.Blazor.Tests.Integration;
 
 public class BlazorValidated_Tests
 {
-    private static IRenderedComponent<BlazorValidated<ContactDto>> CreateValidatorComponent(TestContext context, EditContext editContext, ImmutableDictionary<string, BoxedValidator> boxedValidators,
+    private static IRenderedComponent<BlazorValidated<ContactDto>> CreateValidatorComponent(BunitContext context, EditContext editContext, ImmutableDictionary<string, BoxedValidator> boxedValidators,
                                                                                             bool addDisplayName = true, Func<ValidationLevel, FieldIdentifier?, Task<CancellationToken>>? onValidationStarted = null,
                                                                                             Func<ValidationLevel, FieldIdentifier?, CancellationToken, Task>? onValidationCompleted = null)
 
-        => context.RenderComponent<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
+        => context.Render<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
                                                             .Add(paramBuilder => paramBuilder.BoxedValidators, boxedValidators)
                                                             .Add(paramBuilder => paramBuilder.AddDisplayName, addDisplayName)
                                                             .Add(paramBuilder => paramBuilder.OnValidationStarted, onValidationStarted)
@@ -28,7 +28,7 @@ public class BlazorValidated_Tests
         [Fact]
         public void Should_find_the_parent_property_name_from_the_child_object_model()
         {
-            var context                 = new TestContext();
+            using var context = new BunitContext();
             var contactData             = StaticData.CreateContactObjectGraph();
             var prebuiltAddressBuilder  = ContactModelValidators.PreBuiltAddressBuilder;
             var addressLineField        = new FieldIdentifier(contactData.Address, nameof(AddressDto.AddressLine));
@@ -55,7 +55,7 @@ public class BlazorValidated_Tests
         [InlineData(false)]
         public void Should_prefix_failure_message_with_the_display_name_if_the_add_display_name_parameter_is_true(bool addDisplayName)
         {
-            var context     = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
 
@@ -83,7 +83,7 @@ public class BlazorValidated_Tests
         [InlineData(false)]
         public void Should_prefix_failure_message_with_the_display_name_if_the_add_display_name_parameter_is_true(bool addDisplayName)
         {
-            var context     = new TestContext();
+            using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
             var editContext = new EditContext(contactData);
                         
