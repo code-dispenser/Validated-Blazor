@@ -24,9 +24,9 @@ public static class ContactValidators
     {
         TitleValidator = MemberValidators.CreateStringRegexValidator("^(Mr|Mrs|Ms|Dr|Prof)$", "Title", "Title", "Must be one of Mr, Mrs, Ms, Dr, Prof");
 
-        GivenNameValidator   = MemberValidators.CreateStringRegexValidator(@"^(?=.{2,50}$)[A-Z]+['\- ]?[A-Za-z]*['\- ]?[A-Za-z]+$", "GivenName", "First name", "Must start with a capital letter and be between 2 and 50 characters in length");
+        GivenNameValidator   = MemberValidators.CreateStringRegexValidator(@"^(?=.{2,50}$)[A-Z]+['\- ]?[A-Za-z]*['\- ]?[A-Za-z]+$", "GivenName", "First name", "Must start with a capital letter and be between 2 and 50 characters in length, and no double or trailing spaces.");
 
-        FamilyNameValidator  = MemberValidators.CreateStringRegexValidator(@"^[A-Z].*$", "FamilyName", "Surname", "Must start with a capital letter")
+        FamilyNameValidator  = MemberValidators.CreateStringRegexValidator(@"^(?=.{2,})[A-Z][A-Za-z]*(?:['\- ][A-Za-z]+)*\z", "FamilyName", "Surname", "Must start with a capital letter, and no double or trailing spaces.")
                                 .AndThen(MemberValidators.CreateStringLengthValidator(2, 50, "FamilyName", "Surname", "Must be between 2 and 50 characters in length"));
 
         AgeValidator         = MemberValidators.CreateRangeValidator(25, 50, "Age", "Age", "Must be between 25 and 50");
