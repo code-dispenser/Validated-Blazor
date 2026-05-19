@@ -47,9 +47,11 @@ public class BlazorValidationBuilder<TEntity> where TEntity : notnull
     /// <param name="validator">The member validator delegate.</param>
     /// <param name="forType">The context in which the validator operates (e.g., member, collection).</param>
     /// <param name="optional">Indicates if validation should be skipped if the value is null.</param>
-    private void AddBoxedValidator<TProperty>(string memberName, string memberValidatorKey, MemberValidator<TProperty> validator, ForType forType = ForType.ForMember, bool optional = false) where TProperty : notnull
+    /// <param name="trimOnModelValidation">Indicates if the field should be trimmed on model validation.</param>
+    private void AddBoxedValidator<TProperty>(string memberName, string memberValidatorKey, MemberValidator<TProperty> validator, ForType forType = ForType.ForMember, bool optional = false, bool trimOnModelValidation = false) where TProperty : notnull
 
-        => _boxedValidators[memberValidatorKey] = new BoxedValidator(memberName, forType, optional, validator, typeof(TProperty));
+        => _boxedValidators[memberValidatorKey] = new BoxedValidator(memberName, forType, optional, validator, typeof(TProperty), trimOnModelValidation);
+
 
     /// <summary>
     /// Adds a collection of boxed validators for a nested member to the main dictionary.
@@ -73,13 +75,14 @@ public class BlazorValidationBuilder<TEntity> where TEntity : notnull
     /// <typeparam name="TProperty">The type of the property to validate.</typeparam>
     /// <param name="selectorExpression">An expression that selects the property to validate.</param>
     /// <param name="validator">The member validator delegate to apply to the property.</param>
+    /// <param name="trimOnModelValidation">Indicates if the field should be trimmed on model validation.</param>
     /// <returns>The current builder instance for fluent method chaining.</returns>
-    public BlazorValidationBuilder<TEntity> ForMember<TProperty>(Expression<Func<TEntity, TProperty>> selectorExpression, MemberValidator<TProperty> validator) where TProperty : notnull
+    public BlazorValidationBuilder<TEntity> ForMember<TProperty>(Expression<Func<TEntity, TProperty>> selectorExpression, MemberValidator<TProperty> validator, bool trimOnModelValidation = false) where TProperty : notnull
     {
         var memberName = GeneralUtils.GetMemberName(selectorExpression);
-        var memberKey  = GeneralUtils.BuildMemberValidatorKey(typeof(TEntity).Name, memberName);
+        var memberKey = GeneralUtils.BuildMemberValidatorKey(typeof(TEntity).Name, memberName);
 
-        AddBoxedValidator(memberName, memberKey, validator, ForType.ForMember, false);
+        AddBoxedValidator(memberName, memberKey, validator, ForType.ForMember, false, trimOnModelValidation);
 
         return this;
     }
@@ -106,13 +109,14 @@ public class BlazorValidationBuilder<TEntity> where TEntity : notnull
     /// </summary>
     /// <param name="selectorExpression">An expression that selects the nullable string property to validate.</param>
     /// <param name="validator">The member validator delegate to apply if the string is not null.</param>
+    /// <param name="trimOnModelValidation">Indicates if the field should be trimmed on model validation.</param>
     /// <returns>The current builder instance for fluent method chaining.</returns>
-    public BlazorValidationBuilder<TEntity> ForNullableStringMember(Expression<Func<TEntity, string?>> selectorExpression, MemberValidator<string> validator)
+    public BlazorValidationBuilder<TEntity> ForNullableStringMember(Expression<Func<TEntity, string?>> selectorExpression, MemberValidator<string> validator, bool trimOnModelValidation = false)
     {
         var memberName = GeneralUtils.GetMemberName(selectorExpression);
         var memberKey = GeneralUtils.BuildMemberValidatorKey(typeof(TEntity).Name, memberName);
 
-        AddBoxedValidator(memberName, memberKey, validator, ForType.ForMember, true);
+        AddBoxedValidator(memberName, memberKey, validator, ForType.ForMember, true, trimOnModelValidation);
 
         return this;
     }

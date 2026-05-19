@@ -16,7 +16,7 @@ namespace Validated.Blazor.Tests.Unit;
 public class BlazorValidated_Tests
 {
     private static IRenderedComponent<BlazorValidated<ContactDto>> CreateValidatorComponent(BunitContext context, EditContext editContext, ImmutableDictionary<string, BoxedValidator> boxedValidators,
-                                                                                            bool addDisplayName = true, Func<ValidationLevel, FieldIdentifier?, Task<CancellationToken>>? onValidationStarted = null,
+                                                                                            bool addDisplayName = true, Func<ValidationLevel, FieldIdentifier?,Task<CancellationToken>>? onValidationStarted = null,
                                                                                             Func<ValidationLevel, FieldIdentifier?, CancellationToken, Task>? onValidationCompleted = null)
 
         => context.Render<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
@@ -480,6 +480,44 @@ public class BlazorValidated_Tests
         
              editContext.Validate().Should().BeTrue();
         }
+
+
+        [Fact]
+        public void Should_trim_string_values_on_model_validation_when_trim_on_model_validation_is_true()
+        {
+            using var context = new BunitContext();
+            var contactData = StaticData.CreateContactObjectGraph();
+            var editContext = new EditContext(contactData);
+
+            _ = CreateValidatorComponent(context, editContext, BoxedValidators.OnlyTheContactTitleValidatorWithTrim());
+
+            contactData.Title = "  Mr  ";
+
+            var isValid = editContext.Validate();
+
+            using (new AssertionScope())
+            {
+                isValid.Should().BeTrue();
+                contactData.Title.Should().Be("Mr");
+            }
+        }
+
+        [Fact]
+        public void Should_not_trim_string_values_on_field_changed()
+        {
+            using var context = new BunitContext();
+            var contactData = StaticData.CreateContactObjectGraph();
+            var editContext = new EditContext(contactData);
+
+            _ = CreateValidatorComponent(context, editContext, BoxedValidators.OnlyTheContactTitleValidatorWithTrim());
+
+            contactData.Title = "Mr  ";
+
+            editContext.NotifyFieldChanged(new FieldIdentifier(contactData, nameof(ContactDto.Title)));
+
+            contactData.Title.Should().Be("Mr  ");
+        }
+
 
     }
 

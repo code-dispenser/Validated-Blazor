@@ -146,10 +146,10 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
         GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator, e.FieldIdentifier.Model, e.FieldIdentifier.FieldName);
 
         PropertyInfo propertyInfo  = e.FieldIdentifier.Model.GetType().GetProperty(e.FieldIdentifier.FieldName)!;
-        MethodInfo   methodInfo    = typeof(BlazorValidated<TEntity>).GetMethod("ValidateField", BindingFlags.NonPublic | BindingFlags.Static, [typeof(BoxedValidator),typeof(string), typeof(object), typeof(TEntity), typeof(CancellationToken)])!;
+        MethodInfo   methodInfo    = typeof(BlazorValidated<TEntity>).GetMethod("ValidateField", BindingFlags.NonPublic | BindingFlags.Static, [typeof(BoxedValidator),typeof(string), typeof(object), typeof(TEntity),typeof(bool), typeof(CancellationToken)])!;
         MethodInfo   genericMethod = methodInfo.MakeGenericMethod(boxedValidator.MemberType);
 
-        var validated = await ((Task<Validated<TEntity>>)genericMethod.Invoke(this, [boxedValidator, e.FieldIdentifier.FieldName, e.FieldIdentifier.Model, CurrentEditContext.Model, cancellationToken])!);
+        var validated = await ((Task<Validated<TEntity>>)genericMethod.Invoke(this, [boxedValidator, e.FieldIdentifier.FieldName, e.FieldIdentifier.Model, CurrentEditContext.Model, false, cancellationToken])!);
 
         _messageStore.Clear(e.FieldIdentifier);
 
@@ -213,7 +213,7 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
                     {
                         if (items is null && boxedValidator.Optional == true) continue;//not implemented but made test to exercise the continue
 
-                        var entityFailures = await CallValidateField(boxedValidator, fieldName, items!, (TEntity)CurrentEditContext.Model, cancellationToken);
+                        var entityFailures = await CallValidateField(boxedValidator, fieldName, items!, (TEntity)CurrentEditContext.Model,true, cancellationToken);
 
                         if (entityFailures.Count > 0)
                         {
@@ -254,7 +254,7 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
 
                 if (BoxedValidators.TryGetValue(keyName, out var validator) && validator.ForType != ForType.ForCollection)
                 {
-                    var valueFailures = await CallValidateField(validator, fieldName, currentModel, (TEntity)CurrentEditContext.Model, cancellationToken);
+                    var valueFailures = await CallValidateField(validator, fieldName, currentModel, (TEntity)CurrentEditContext.Model, true, cancellationToken);
 
                     if (valueFailures.Count > 0)
                     {
@@ -276,16 +276,19 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
     /// <param name="fieldName">The name of the field being validated.</param>
     /// <param name="fieldModel">The model instance that owns the field.</param>
     /// <param name="formModel">The root model of the form.</param>
+    /// <param name="isModelValidation">Is it part of a model validation call.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A list of validation failures; empty if validation succeeds.</returns>
-    private async Task<List<InvalidEntry>> CallValidateField(BoxedValidator boxedValidator, string fieldName, object fieldModel, TEntity formModel, CancellationToken cancellationToken = default)
+    private async Task<List<InvalidEntry>> CallValidateField(BoxedValidator boxedValidator, string fieldName, object fieldModel, TEntity formModel, bool isModelValidation = false, CancellationToken cancellationToken = default)
     {
         GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator, fieldModel, fieldName);
 
-        MethodInfo methodInfo    = typeof(BlazorValidated<TEntity>).GetMethod("ValidateField", BindingFlags.NonPublic | BindingFlags.Static, [typeof(BoxedValidator), typeof(string), typeof(object), typeof(TEntity), typeof(CancellationToken)])!;
+        if (isModelValidation) GeneralUtils.TrimStringValue(boxedValidator, fieldModel, fieldName);
+
+        MethodInfo methodInfo    = typeof(BlazorValidated<TEntity>).GetMethod("ValidateField", BindingFlags.NonPublic | BindingFlags.Static, [typeof(BoxedValidator), typeof(string), typeof(object), typeof(TEntity), typeof(bool), typeof(CancellationToken)])!;
         MethodInfo genericMethod = methodInfo.MakeGenericMethod(boxedValidator.MemberType);
 
-        var result =  await ((Task<Validated<TEntity>>)genericMethod.Invoke(this, [boxedValidator, fieldName,fieldModel, formModel, cancellationToken])!);
+        var result =  await ((Task<Validated<TEntity>>)genericMethod.Invoke(this, [boxedValidator, fieldName,fieldModel, formModel, isModelValidation, cancellationToken])!);
 
         return result.IsValid ? [] : [.. result.Failures];
     }
@@ -298,9 +301,10 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
     /// <param name="fieldName">The name of the field.</param>
     /// <param name="fieldModel">The model containing the field.</param>
     /// <param name="formModel">The root form model.</param>
+    /// <param name="isModelValidation">Is it part of a model validation call.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A <see cref="Validated{TEntity}"/> result for the operation.</returns>
-    private static async Task<Validated<TEntity>> ValidateField<TMemberType>(BoxedValidator boxedValidator, string fieldName, object fieldModel, TEntity formModel, CancellationToken cancellationToken = default) where TMemberType : notnull
+    private static async Task<Validated<TEntity>> ValidateField<TMemberType>(BoxedValidator boxedValidator, string fieldName, object fieldModel, TEntity formModel, bool isModelValidation = false, CancellationToken cancellationToken = default) where TMemberType : notnull
     {
         GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator, fieldModel, fieldName);
 

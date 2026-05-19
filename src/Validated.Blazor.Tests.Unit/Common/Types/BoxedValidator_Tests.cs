@@ -18,7 +18,7 @@ public class BoxedValidator_Tests
         {
             boxedValidator.Should().Match<BoxedValidator>(b => b.ForMember == nameof(ContactDto.GivenName) && b.ForType == ForType.ForMember && b.Optional == false
                                                        && b.MemberValidator.GetType() ==  ((object)StubbedValidators.CreatePassingMemberValidator<string>).GetType()
-                                                       && b.MemberType == typeof(string));
+                                                       && b.MemberType == typeof(string) && b.TrimOnModelValidation == false);
         }
 
     }
@@ -39,12 +39,12 @@ public class BoxedValidator_Tests
     {
         var boxedValidator = new BoxedValidator(nameof(ContactDto.GivenName), ForType.ForMember, false, (object)StubbedValidators.CreatePassingMemberValidator<string>, typeof(string));
 
-        var newValidator = boxedValidator with { ForMember = nameof(ContactDto.Age), ForType = ForType.ForMember, Optional = true, MemberValidator = (object)StubbedValidators.CreatePassingMemberValidator<int>, MemberType = typeof(int) };
+        var newValidator = boxedValidator with { ForMember = nameof(ContactDto.Age), ForType = ForType.ForMember, Optional = true, MemberValidator = (object)StubbedValidators.CreatePassingMemberValidator<int>, MemberType = typeof(int), TrimOnModelValidation = true };
 
 
         newValidator.Should().Match<BoxedValidator>(b => b.ForMember == nameof(ContactDto.Age) && b.ForType == ForType.ForMember && b.Optional == true
                                                        && b.MemberValidator.GetType() ==  ((object)StubbedValidators.CreatePassingMemberValidator<int>).GetType()
-                                                       && b.MemberType == typeof(int));
+                                                       && b.MemberType == typeof(int) && b.TrimOnModelValidation == true);
 
 
     }

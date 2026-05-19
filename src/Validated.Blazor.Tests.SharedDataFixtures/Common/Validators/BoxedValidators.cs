@@ -11,6 +11,12 @@ namespace Validated.Blazor.Tests.SharedDataFixtures.Common.Validators;
 
 public static class BoxedValidators
 {
+    public static ImmutableDictionary<string, BoxedValidator> OnlyTheContactTitleValidatorWithTrim()
+    {
+        BoxedValidator validator = new(nameof(ContactDto.Title), ForType.ForMember, false, ContactModelValidators.TitleValidator, typeof(string), TrimOnModelValidation: true);
+
+        return new Dictionary<string, BoxedValidator> { [String.Concat(nameof(ContactDto), ".", nameof(ContactDto.Title))] = validator }.ToImmutableDictionary();
+    }
     public static ImmutableDictionary<string, BoxedValidator> OnlyTheContactTitleValidator()
     {
         BoxedValidator validator = new(nameof(ContactDto.Title), ForType.ForMember, false, ContactModelValidators.TitleValidator, typeof(string));

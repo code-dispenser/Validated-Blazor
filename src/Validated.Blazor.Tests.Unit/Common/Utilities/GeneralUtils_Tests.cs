@@ -245,6 +245,68 @@ public class GeneralUtils_Tests
             FluentActions.Invoking(() => GeneralUtils.NormaliseOptionalStringEmptyToNull(boxedValidator, null!, nameof(ContactDto.Mobile))).Should().NotThrow();
         }
     }
+
+    public class TrimStringValue
+    {
+        [Fact]
+        public void Should_trim_whitespace_from_a_string_value()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var boxedValidator = new BoxedValidator(nameof(ContactDto.Title), ForType.ForMember, false, (object)StubbedValidators.CreatePassingMemberValidator<string>, typeof(string), TrimOnModelValidation: true);
+
+            contactData.Title = "  Paul Kent  ";
+            GeneralUtils.TrimStringValue(boxedValidator, contactData, nameof(ContactDto.Title));
+
+            contactData.Title.Should().Be("Paul Kent");
+        }
+
+        [Fact]
+        public void Should_return_if_property_is_not_correct_without_changing_the_object_value()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var boxedValidator = new BoxedValidator(nameof(ContactDto.Title), ForType.ForMember, false, (object)StubbedValidators.CreatePassingMemberValidator<string>, typeof(string), TrimOnModelValidation: true);
+
+            contactData.Title = "  Paul Kent  ";
+            GeneralUtils.TrimStringValue(boxedValidator, contactData, "BadPropertyName");
+
+            contactData.Title.Should().Be("  Paul Kent  ");
+        }
+
+        [Fact]
+        public void Should_not_trim_if_trim_on_model_validation_is_false()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var boxedValidator = new BoxedValidator(nameof(ContactDto.Title), ForType.ForMember, false, (object)StubbedValidators.CreatePassingMemberValidator<string>, typeof(string), TrimOnModelValidation: false);
+
+            contactData.Title = "  Paul Kent  ";
+            GeneralUtils.TrimStringValue(boxedValidator, contactData, nameof(ContactDto.Title));
+
+            contactData.Title.Should().Be("  Paul Kent  ");
+        }
+
+        [Fact]
+        public void Should_not_trim_if_member_type_is_not_a_string()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var boxedValidator = new BoxedValidator(nameof(ContactDto.Age), ForType.ForMember, false, (object)StubbedValidators.CreatePassingMemberValidator<int>, typeof(int), TrimOnModelValidation: true);
+
+            contactData.Age = 25;
+            GeneralUtils.TrimStringValue(boxedValidator, contactData, nameof(ContactDto.Age));
+
+            contactData.Age.Should().Be(25);
+        }
+
+        [Fact]
+        public void Should_not_throw_an_exception_if_the_field_model_is_null()
+        {
+            var contactData = StaticData.CreateContactObjectGraph();
+            var boxedValidator = new BoxedValidator(nameof(ContactDto.Title), ForType.ForMember, false, (object)StubbedValidators.CreatePassingMemberValidator<string>, typeof(string), TrimOnModelValidation: true);
+
+            FluentActions.Invoking(() => GeneralUtils.TrimStringValue(boxedValidator, null!, nameof(ContactDto.Title))).Should().NotThrow();
+        }
+    }
+
+
 }
 
 

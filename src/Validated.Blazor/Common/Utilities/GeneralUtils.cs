@@ -138,4 +138,20 @@ internal static class GeneralUtils
             if (currentValue is string stringValue && String.IsNullOrWhiteSpace(stringValue)) propertyInfo.SetValue(fieldModel, null);
         }
     }
+
+
+
+    public static void TrimStringValue(BoxedValidator boxedValidator, object fieldModel, string fieldName)
+    {
+        if (boxedValidator.TrimOnModelValidation && boxedValidator.MemberType == typeof(string))
+        {
+            PropertyInfo? propertyInfo = fieldModel?.GetType().GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance);
+
+            if (propertyInfo == null) return;
+
+            var currentValue = propertyInfo.GetValue(fieldModel);
+
+            if (currentValue is string stringValue) propertyInfo.SetValue(fieldModel, stringValue.Trim());
+        }
+    }
 }

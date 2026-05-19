@@ -137,8 +137,8 @@
 
         var tenantBuilder = BlazorTenantValidationBuilder<ContactDto>.Create(ruleConfigs, _validationFactoryProvider)
                                 .ForMember(c => c.Title)
-                                .ForMember(c => c.GivenName)
-                                .ForMember(c => c.FamilyName)  // << This validator (function) combines two functions a regex and a separate length validator
+                                .ForMember(c => c.GivenName)    // << The regex for this says end with a character so a single trailing space is invalid.
+                                .ForMember(c => c.FamilyName, true)  // << This validator (function) combines two functions a regex and a separate length validator it allows a trailing space, which we remove on modal validation
                                 .ForMember(c => c.Age)
                                 .ForComparisonWithValue(c => c.DOB)
                                 .ForComparisonWithMember(c => c.CompareDOB)

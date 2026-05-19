@@ -84,9 +84,10 @@ public class BlazorTenantValidationBuilder<TEntity> where TEntity : notnull
     /// <param name="validator">The member validator delegate.</param>
     /// <param name="forType">The context in which the validator operates (e.g., member, collection).</param>
     /// <param name="optional">Indicates if validation should be skipped if the value is null.</param>
-    private void AddBoxedValidator<TProperty>(string memberName, string memberValidatorKey, MemberValidator<TProperty> validator, ForType forType = ForType.ForMember, bool optional = false) where TProperty : notnull
+    /// <param name="trimOnModelValidation">Indicates if the field should be trimmed on model validation.</param>
+    private void AddBoxedValidator<TProperty>(string memberName, string memberValidatorKey, MemberValidator<TProperty> validator, ForType forType = ForType.ForMember, bool optional = false, bool trimOnModelValidation = false) where TProperty : notnull
 
-        => _boxedValidators[memberValidatorKey] = new BoxedValidator(memberName, forType, optional, validator, typeof(TProperty));
+        => _boxedValidators[memberValidatorKey] = new BoxedValidator(memberName, forType, optional, validator, typeof(TProperty), trimOnModelValidation);
 
 
     /// <summary>
@@ -94,14 +95,15 @@ public class BlazorTenantValidationBuilder<TEntity> where TEntity : notnull
     /// </summary>
     /// <typeparam name="TProperty">The type of the property to validate.</typeparam>
     /// <param name="selectorExpression">An expression that selects the property to validate.</param>
+    /// <param name="trimOnModelValidation">Indicates if the field should be trimmed on model validation.</param>
     /// <returns>The current builder instance for fluent method chaining.</returns>
-    public BlazorTenantValidationBuilder<TEntity> ForMember<TProperty>(Expression<Func<TEntity, TProperty>> selectorExpression) where TProperty : notnull
+    public BlazorTenantValidationBuilder<TEntity> ForMember<TProperty>(Expression<Func<TEntity, TProperty>> selectorExpression, bool trimOnModelValidation = false) where TProperty : notnull
     {
         var memberName = GeneralUtils.GetMemberName(selectorExpression);
         var memberKey  = GeneralUtils.BuildMemberValidatorKey(typeof(TEntity).Name, memberName);
         var validator  = _factoryProvider.CreateValidator<TProperty>(_entityTypeFullName, memberName, _ruleConfigs, _tenantID, _cultureID);
 
-        AddBoxedValidator(memberName, memberKey, validator, ForType.ForMember, false);
+        AddBoxedValidator(memberName, memberKey, validator, ForType.ForMember, false,trimOnModelValidation);
 
         return this;
     }
@@ -127,14 +129,15 @@ public class BlazorTenantValidationBuilder<TEntity> where TEntity : notnull
     /// Configures validation for a nullable string property, skipping validation if the value is null.
     /// </summary>
     /// <param name="selectorExpression">An expression that selects the nullable string property to validate.</param>
+    /// <param name="trimOnModelValidation">Indicates if the field should be trimmed on model validation.</param>
     /// <returns>The current builder instance for fluent method chaining.</returns>
-    public BlazorTenantValidationBuilder<TEntity> ForNullableStringMember(Expression<Func<TEntity, string?>> selectorExpression)
+    public BlazorTenantValidationBuilder<TEntity> ForNullableStringMember(Expression<Func<TEntity, string?>> selectorExpression, bool trimOnModelValidation = false)
     {
         var memberName = GeneralUtils.GetMemberName(selectorExpression);
         var memberKey  = GeneralUtils.BuildMemberValidatorKey(typeof(TEntity).Name, memberName);
         var validator  = _factoryProvider.CreateValidator<string>(_entityTypeFullName, memberName, _ruleConfigs, _tenantID, _cultureID);
 
-        AddBoxedValidator(memberName, memberKey, validator, ForType.ForMember, true);
+        AddBoxedValidator(memberName, memberKey, validator, ForType.ForMember, true, trimOnModelValidation);
 
         return this;
     }

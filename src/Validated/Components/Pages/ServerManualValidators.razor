@@ -138,9 +138,9 @@
         * Just using one builder here so you can see things together. You just compose want you want and share what you want. 
         */
         var builder = BlazorValidationBuilder<ContactDto>.Create()
-                                .ForMember(c => c.Title, ContactValidators.TitleValidator)                      //< using a ready built title member validator
-                                .ForMember(c => c.GivenName, ContactValidators.GivenNameValidator)
-                                .ForMember(c => c.FamilyName, ContactValidators.FamilyNameValidator)            // << This validator (function) combines two functions a regex and a separate length validator
+                                .ForMember(c => c.Title, ContactValidators.TitleValidator)                // << using a ready built title member validator
+                                .ForMember(c => c.GivenName, ContactValidators.GivenNameValidator)        // << The regex for this says end with a character so a single trailing space is invalid.  
+                                .ForMember(c => c.FamilyName, ContactValidators.FamilyNameValidator,true) // << This validator (function) combines two functions a regex and a separate length validator it allows a trailing space, which we remove on modal validation
                                 .ForMember(c => c.Age, ContactValidators.AgeValidator)
                                 .ForComparisonWithValue(c => c.DOB, ContactValidators.DOBValidator)
                                 .ForComparisonWithMember(c => c.CompareDOB, ContactValidators.CompareDOBValidator)

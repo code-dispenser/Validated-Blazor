@@ -1,12 +1,11 @@
-﻿using FluentAssertions;
+﻿using Bunit;
+using FluentAssertions;
 using FluentAssertions.Execution;
-using System.Collections.Immutable;
+using Microsoft.AspNetCore.Components.Forms;
 using Validated.Blazor.Builders;
 using Validated.Blazor.Common.Constants;
-using Validated.Blazor.Types;
 using Validated.Blazor.Tests.SharedDataFixtures.Common.Data;
 using Validated.Blazor.Tests.SharedDataFixtures.Common.Models;
-using Validated.Blazor.Tests.SharedDataFixtures.Common.Validators;
 using Validated.Core.Factories;
 using Validated.Core.Types;
 
@@ -39,7 +38,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.Title, cancellationToken: TestContext.Current.CancellationToken);
+        var validated = await validator(contactData.Title, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -59,7 +58,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<int>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator((int)contactData.NullableAge!, cancellationToken: TestContext.Current.CancellationToken);//cant use <int?> validators do not allow it
+        var validated = await validator((int)contactData.NullableAge!, cancellationToken: Xunit.TestContext.Current.CancellationToken);//cant use <int?> validators do not allow it
 
         using (new AssertionScope())
         {
@@ -78,7 +77,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.Mobile!, cancellationToken: TestContext.Current.CancellationToken);//data fails validation as its not a uk number
+        var validated = await validator(contactData.Mobile!, cancellationToken: Xunit.TestContext.Current.CancellationToken);//data fails validation as its not a uk number
 
         using (new AssertionScope())
         {
@@ -98,7 +97,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.Address.AddressLine, cancellationToken: TestContext.Current.CancellationToken);
+        var validated = await validator(contactData.Address.AddressLine, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -120,7 +119,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.NullableAddress.AddressLine, cancellationToken: TestContext.Current.CancellationToken);
+        var validated = await validator(contactData.NullableAddress.AddressLine, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -140,7 +139,7 @@ public class BlazorTenantValidationBuilder_Tests
 
         var validator = (MemberValidator<string>)boxedValidators.ElementAt(0).Value.MemberValidator;
 
-        var validated = await validator(contactData.ContactMethods[0].MethodValue, cancellationToken: TestContext.Current.CancellationToken);
+        var validated = await validator(contactData.ContactMethods[0].MethodValue, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -158,7 +157,7 @@ public class BlazorTenantValidationBuilder_Tests
         var boxedValidators = tenantBuilder.GetBoxedValidators();
 
         var validator = (MemberValidator<ContactDto>)boxedValidators.ElementAt(0).Value.MemberValidator;
-        var validated = await validator(contactData, cancellationToken: TestContext.Current.CancellationToken);
+        var validated = await validator(contactData, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -176,7 +175,7 @@ public class BlazorTenantValidationBuilder_Tests
         var boxedValidators = tenantBuilder.GetBoxedValidators();
 
         var validator = (MemberValidator<int>)boxedValidators.ElementAt(0).Value.MemberValidator;
-        var validated = await validator(contactData.Age, cancellationToken: TestContext.Current.CancellationToken);
+        var validated = await validator(contactData.Age, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -196,7 +195,7 @@ public class BlazorTenantValidationBuilder_Tests
         contactData.Entries = ["EntryOne", "EntryTwo"];
 
         var validator = (MemberValidator<List<string>>)boxedValidators.ElementAt(0).Value.MemberValidator;
-        var validated = await validator(contactData.Entries, cancellationToken: TestContext.Current.CancellationToken);
+        var validated = await validator(contactData.Entries, cancellationToken: Xunit.TestContext.Current.CancellationToken);
 
         using (new AssertionScope())
         {
@@ -221,5 +220,32 @@ public class BlazorTenantValidationBuilder_Tests
             newKeyRoot.Should().Be(nameof(ContactDto.Address));
         }
 
+    }
+
+
+    [Fact]
+    public void Should_trim_string_values_on_model_validation_when_trim_on_model_validation_is_true()
+    {
+        using var context = new BunitContext();
+        var contactData = StaticData.CreateContactObjectGraph();
+        var editContext = new EditContext(contactData);
+
+        var boxedValidators = CreateTenantBuilder<ContactDto>()
+                                .ForMember(c => c.Title, trimOnModelValidation: true)
+                                    .GetBoxedValidators();
+
+        context.Render<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
+                                                        .Add(p => p.BoxedValidators, boxedValidators)
+                                                        .Add(p => p.AddDisplayName, false));
+
+        contactData.Title = "  Mr  ";
+
+        var isValid = editContext.Validate();
+
+        using (new AssertionScope())
+        {
+            isValid.Should().BeTrue();
+            contactData.Title.Should().Be("Mr");
+        }
     }
 }

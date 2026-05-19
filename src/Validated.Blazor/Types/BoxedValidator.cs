@@ -16,6 +16,9 @@ namespace Validated.Blazor.Types;
 /// <param name="MemberType">
 /// The specific <see cref="Type"/> of the member that the validator expects (e.g., typeof(string), typeof(int)).
 /// </param>
+/// <param name="TrimOnModelValidation">
+/// Flag to allow mutation of string fields to remove trailing spaces but only on a full model validation.
+/// </param>
 /// <remarks>
 /// <para>
 /// The Blazor validation system needs to store validators for various property types in a single dictionary.
@@ -29,5 +32,5 @@ namespace Validated.Blazor.Types;
 /// validator back to its specific generic type and invoke it with the correct arguments.
 /// </para>
 /// </remarks>
-public record BoxedValidator(string ForMember, ForType ForType, bool Optional, object MemberValidator, Type MemberType);
+public record BoxedValidator(string ForMember, ForType ForType, bool Optional, object MemberValidator, Type MemberType, bool TrimOnModelValidation = false);
 
