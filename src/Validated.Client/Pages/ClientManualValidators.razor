@@ -19,7 +19,8 @@
 </ul>
 
 <EditForm EditContext="_editContext">
-    <BlazorValidated TEntity="ContactDto" BoxedValidators="_contactBoxedValidators" AddDisplayName="true" OnValidationStarted="OnValidationStarted" OnValidationCompleted="OnValidationCompletedStarted" />
+    <BlazorValidated TEntity="ContactDto" BoxedValidators="_contactBoxedValidators" AddDisplayName="true" OnValidationStarted="OnValidationStarted" 
+        OnValidationCompleted="OnValidationCompletedStarted" DeferFieldValidation="false" />
     <ValidationSummary />
 
     <div class="row mb-2">
