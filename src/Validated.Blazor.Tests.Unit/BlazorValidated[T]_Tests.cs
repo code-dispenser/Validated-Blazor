@@ -17,13 +17,14 @@ public class BlazorValidated_Tests
 {
     private static IRenderedComponent<BlazorValidated<ContactDto>> CreateValidatorComponent(BunitContext context, EditContext editContext, ImmutableDictionary<string, BoxedValidator> boxedValidators,
                                                                                             bool addDisplayName = true, Func<ValidationLevel, FieldIdentifier?,Task<CancellationToken>>? onValidationStarted = null,
-                                                                                            Func<ValidationLevel, FieldIdentifier?, CancellationToken, Task>? onValidationCompleted = null)
+                                                                                            Func<ValidationLevel, FieldIdentifier?, CancellationToken, Task>? onValidationCompleted = null, bool deferFieldValidation = false)
 
         => context.Render<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
                                                             .Add(paramBuilder => paramBuilder.BoxedValidators, boxedValidators)
                                                             .Add(paramBuilder => paramBuilder.AddDisplayName, addDisplayName)
                                                             .Add(paramBuilder => paramBuilder.OnValidationStarted, onValidationStarted)
-                                                            .Add(paramBuilder => paramBuilder.OnValidationCompleted, onValidationCompleted));
+                                                            .Add(paramBuilder => paramBuilder.OnValidationCompleted, onValidationCompleted)
+                                                            .Add(paramBuilder => paramBuilder.DeferFieldValidation, deferFieldValidation));
     public class OnInitialized 
     {
         [Fact]
@@ -73,11 +74,29 @@ public class BlazorValidated_Tests
 
             validatorComponent.Should().NotBeNull();
         }
+
+
+        [Fact]
+        public void Should_be_able_to_set_defer_field_validation()
+        {
+            using var context = new BunitContext();
+
+            var editContext = new EditContext(StaticData.CreateContactObjectGraph());
+
+            ImmutableDictionary<string, BoxedValidator> boxedValidators = BoxedValidators.OnlyTheContactTitleValidator();
+
+            var validatorComponent = context.Render<BlazorValidated<ContactDto>>(paramBuilder => paramBuilder.AddCascadingValue(editContext)
+                                                                                                                            .Add(paramBuilder => paramBuilder.BoxedValidators, boxedValidators)
+                                                                                                                            .Add(paramBuiilder => paramBuiilder.DeferFieldValidation, true));
+
+            validatorComponent.Instance.DeferFieldValidation.Should().BeTrue();
+        }
     }
 
 
     public class CurrentEditContext_OnFieldChanged
     {
+
         [Fact]
         public void Should_validate_field_when_the_field_changes()
         {
@@ -92,6 +111,23 @@ public class BlazorValidated_Tests
             editContext.NotifyFieldChanged(new FieldIdentifier(contactData, nameof(ContactDto.Title)));
 
             editContext.GetValidationMessages(new FieldIdentifier(contactData, nameof(ContactDto.Title))).Should().NotBeEmpty();
+        }
+
+
+        [Fact]
+        public void Should_not_validate_a_field_when_the_field_changes_and_the_defered_field_validation_is_in_effect()
+        {
+            using var context = new BunitContext();
+            var contactData = StaticData.CreateContactObjectGraph();
+            var editContext = new EditContext(contactData);
+
+            _ = CreateValidatorComponent(context, editContext, BoxedValidators.OnlyTheContactTitleValidator(),deferFieldValidation:true);
+
+            contactData.Title = "D";//fails validation
+
+            editContext.NotifyFieldChanged(new FieldIdentifier(contactData, nameof(ContactDto.Title)));
+
+            editContext.GetValidationMessages(new FieldIdentifier(contactData, nameof(ContactDto.Title))).Should().BeEmpty();
         }
 
         [Fact]

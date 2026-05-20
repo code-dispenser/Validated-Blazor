@@ -16,16 +16,16 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/code-dispenser/Validated-Blazor</RepositoryUrl>
     <PackageTags>blazor;validation;validated;forms;editcontext;fluent;functional;builder;composable;extensible;ui</PackageTags>
-	<Version>1.1.0</Version>
-	<AssemblyVersion>1.1.0</AssemblyVersion>
-	<FileVersion>1.1.0</FileVersion>
+	<Version>1.2.0</Version>
+	<AssemblyVersion>1.2.0</AssemblyVersion>
+	<FileVersion>1.2.0</FileVersion>
 	<InformationalVersion>1.0.3</InformationalVersion>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 	<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	<Deterministic>true</Deterministic>
 	<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-	<PackageReleaseNotes>Added TrimOnModelValidation option to the builder methods for string members. When enabled, leading and trailing whitespace is removed from the model property value during full model validation only.</PackageReleaseNotes>
+	<PackageReleaseNotes>Added DeferFieldValidation parameter to BlazorValidated. When enabled, field-level validation is suppressed until the first full model validation occurs, after which real-time field validation is enabled to allow errors to clear as the user corrects them</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

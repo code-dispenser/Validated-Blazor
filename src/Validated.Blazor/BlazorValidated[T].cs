@@ -54,6 +54,17 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
     [Parameter] public bool AddDisplayName { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets a value indicating whether to suppress individual field-level validation until a full model validation is requested.
+    /// </summary>
+    /// <remarks>
+    /// When true, validation listeners on individual field interactions (such as oninput or onchange) remain idle until the first macro 
+    /// validation request occurs (via form submission or a manual call to Validate()). Once a model validation pass is executed, real-time 
+    /// field-level validation is permanently enabled to allow immediate, accessible cleanup of errors as the user edits fields.
+    /// </remarks>
+    [Parameter]
+    public bool DeferFieldValidation { get; set; } = false;
+
+    /// <summary>
     /// An optional callback that is invoked when a validation operation begins.
     /// </summary>
     /// <remarks>
@@ -74,6 +85,8 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
     private ValidationMessageStore _messageStore    = default!;
     private const string           _prefixSeparator = " - ";
 
+    private bool _modelValidated = false;
+
     /// <summary>
     /// Initializes the component by attaching event handlers to the <see cref="EditContext"/>.
     /// </summary>
@@ -85,6 +98,8 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
         if (CurrentEditContext == null)  throw new InvalidOperationException(ErrorMessages.Validator_Missing_Context_Message);
 
         if (BoxedValidators == null || BoxedValidators.IsEmpty) throw new InvalidOperationException(ErrorMessages.Validator_Missing_Boxed_Validators_Message);
+
+        _modelValidated = !DeferFieldValidation;
 
         _messageStore = new ValidationMessageStore(CurrentEditContext);
 
@@ -116,6 +131,8 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
 
         CurrentEditContext.NotifyValidationStateChanged();
         
+        _modelValidated = true;
+
         if (OnValidationCompleted is not null) await OnValidationCompleted(ValidationLevel.Model, null, cancellationToken);      
     }
 
@@ -124,6 +141,9 @@ public class BlazorValidated<TEntity> : ComponentBase, IDisposable where TEntity
     /// </summary>
     private async void CurrentEditContext_OnFieldChanged(object? sender, FieldChangedEventArgs e)
     {
+
+        if (false == _modelValidated) return;
+
         var cancellationToken = CancellationToken.None;
         
         if(OnValidationStarted is not null)
