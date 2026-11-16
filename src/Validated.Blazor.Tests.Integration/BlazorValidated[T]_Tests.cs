@@ -81,7 +81,7 @@ public class BlazorValidated_Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void Should_prefix_failure_message_with_the_display_name_if_the_add_display_name_parameter_is_true(bool addDisplayName)
+        public async Task Should_prefix_failure_message_with_the_display_name_if_the_add_display_name_parameter_is_true(bool addDisplayName)
         {
             using var context = new BunitContext();
             var contactData = StaticData.CreateContactObjectGraph();
